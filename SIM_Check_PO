@@ -1,0 +1,17 @@
+select a.store_id,a.external_id PO,a.supplier_id,a.status,
+case a.status 
+when 1 then 'Approved'
+when 2 then 'InProgress'
+when 3 then 'Cancelled'
+when 4 then 'Completed'
+else 'Other' end staus_name,
+a.create_date+7/24 create_date,b.RECEIVED_DATE+7/24 RECEIVED_DATE,b.RECEIVED_USER,c.FIRST_NAME
+from sim16prd.PURCHASE_ORDER a
+left join sim16prd.dsd b
+on a.id = b.PURCHASE_ORDER_ID
+left join sim16prd.security_user c
+on upper(b.RECEIVED_USER) = upper(c.username)
+where 1=1
+and a.store_id = 5027 --store_id
+and a.EXTERNAL_ID = '36806708' --PO_No
+;
