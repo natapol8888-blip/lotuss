@@ -1,0 +1,29 @@
+SELECT
+a.store_id,
+CASE a.destination_type
+WHEN 1 THEN 'IBT-OUT'
+WHEN 3 THEN 'RTDC'
+END  AS type,
+c.tsf_id,a.id AS tsf_ship_id,a.destination_id AS "TO STORE/DC",
+a.status,
+CASE a.status
+WHEN 1 THEN 'New'
+WHEN 2 THEN 'In Progress'
+WHEN 3 THEN 'Submitted'
+WHEN 4 THEN 'Shipped'
+WHEN 5 THEN 'Canceled'
+ELSE        'OTHER'
+END AS status_name,
+a.create_date+ 7/24 AS create_date,a.dispatch_date + 7/24 AS received_date,a.dispatch_user,b.first_name
+FROM sim16prd.tsf_ship a
+JOIN (
+    SELECT DISTINCT tsf_ship_id, tsf_id
+    FROM sim16prd.tsf_ship_line_item
+) c ON a.id = c.tsf_ship_id
+LEFT JOIN sim16prd.security_user b
+    ON upper(b.username) = upper(a.dispatch_user)
+WHERE 1=1
+and a.store_id = 5012
+and a.id = 14242389 --Shipment ID
+--and c.tsf_id = 7686326294 --Transfer ID
+;
